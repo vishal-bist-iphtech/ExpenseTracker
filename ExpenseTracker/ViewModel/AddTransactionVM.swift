@@ -16,10 +16,7 @@ final class AddTransactionVM {
     }
     
     
-    func validate(
-        amountText: String?,
-        descriptionText: String?
-    ) -> String? {
+    func validate( amountText: String?, descriptionText: String? ) -> String? {
         
         guard let amountText = amountText,
               !amountText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -55,5 +52,26 @@ final class AddTransactionVM {
         )
         
         repository.addTransaction(transaction)
+    }
+    
+    func updateTransaction(
+        id: UUID,
+        amount: Double,
+        description: String,
+        category: Category,
+        type: TransactionType,
+        date: Date
+    ) {
+        
+        let transaction = Transaction(
+            id: id,
+            amount: amount,
+            description: description,
+            category: category,
+            type: type,
+            date: date
+        )
+        
+        repository.updateTransaction(transaction)
     }
 }

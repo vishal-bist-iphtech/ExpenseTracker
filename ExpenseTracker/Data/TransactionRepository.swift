@@ -19,6 +19,19 @@ final class TransactionRepository {
         transactions.append(transaction)
     }
     
+    func updateTransaction(_ transaction: Transaction) {
+        
+        guard let index = transactions.firstIndex(
+            where: {$0.id == transaction.id}
+        ) else {return}
+        
+        transactions[index] = transaction
+    }
+    
+    func fetchTransaction(with id: UUID) -> Transaction? {
+        return transactions.first(where: { $0.id == id })
+    }
+
     func deleteTransaction(with id: UUID) {
         transactions.removeAll {$0.id == id}
     }

@@ -33,48 +33,15 @@ class TransactionTableViewCell: UITableViewCell {
             time: .omitted
         )
         
-        switch transaction.category {
-            
-        case .food:
-            typeImageView.image = UIImage(
-                systemName: "fork.knife"
-            )
-            
-        case .shopping:
-            typeImageView.image = UIImage(
-                systemName: "bag"
-            )
-            
-        case .travel:
-            typeImageView.image = UIImage(
-                systemName: "airplane"
-            )
-            
-        case .bills:
-            typeImageView.image = UIImage(
-                systemName: "doc.text"
-            )
-            
-        case .salary:
-            typeImageView.image = UIImage(
-                systemName: "banknote"
-            )
-            
-        case .other:
-            typeImageView.image = UIImage(
-                systemName: "ellipsis.circle"
-            )
-        }
+        typeImageView.image = UIImage(
+            systemName: transaction.category.iconName
+        )
         
-        switch transaction.type {
+       
+        amountLabel.text = "\(transaction.type.sign) ₹\(transaction.amount)"
+        
+        typeIndicatorView.backgroundColor = transaction.type == .income
+        ? .systemGreen : .systemRed
             
-        case .income:
-            amountLabel.text = "+ ₹\(transaction.amount)"
-            typeIndicatorView.backgroundColor = .systemGreen
-            
-        case .expense:
-            amountLabel.text = "- ₹\(transaction.amount)"
-            typeIndicatorView.backgroundColor = .systemRed
-        }
     }
 }

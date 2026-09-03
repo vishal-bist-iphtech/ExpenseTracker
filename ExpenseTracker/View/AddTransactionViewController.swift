@@ -20,6 +20,9 @@ class AddTransactionViewController: UIViewController, UIPickerViewDelegate, UIPi
         repository: AppContainer.shared.transactionRepository
     )
     
+    // screen mode (add or edit)
+    var mode: FormMode = .add
+    
     
     private let categories: [Category] = [
         .food,
@@ -43,8 +46,52 @@ class AddTransactionViewController: UIViewController, UIPickerViewDelegate, UIPi
         
         categoryPickerView.delegate = self
         categoryPickerView.dataSource = self
+    
+        configureMode()
+
     }
     
+    
+    
+    private func configureMode() {
+        
+        switch mode {
+            
+        case .add:
+            navigationItem.title = "Add Transaction"
+            
+        case .edit(let transaction):
+            navigationItem.title = "Edit Transaction"
+            
+            amountTextfield.text = "\(transaction.amount)"
+            descriptionTextfield.text = transaction.description
+            
+            datePicker.date = transaction.date
+            
+            switch transaction.type {
+                
+            case .income:
+                typeSegmentControl.selectedSegmentIndex = 0
+                selectedTransactionType = .income
+                
+            case .expense:
+                typeSegmentControl.selectedSegmentIndex = 1
+                selectedTransactionType = .expense
+            }
+            
+            if let index = categories.firstIndex(
+                where: { $0 == transaction.category }
+            ) {
+                categoryPickerView.selectRow(
+                    index,
+                    inComponent: 0,
+                    animated: false
+                )
+                
+                selectedCategory = transaction.category
+            }
+        }
+    }
     
     // no. columns?
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -57,20 +104,7 @@ class AddTransactionViewController: UIViewController, UIPickerViewDelegate, UIPi
     // what each row shows?
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         
-        switch categories[row] {
-        case .food:
-            return "Food"
-        case .shopping:
-            return "Shopping"
-        case .travel:
-            return "Travel"
-        case .bills:
-            return "Bills"
-        case .salary:
-            return "Salary"
-        case .other:
-            return "Other"
-        }
+        return categories[row].displayName
     }
     // selected row?
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -91,7 +125,10 @@ class AddTransactionViewController: UIViewController, UIPickerViewDelegate, UIPi
     
     @IBAction func saveButtonTapped(_ sender: UIButton) {
         
-        if let errorMessage = vm.validate(amountText: amountTextfield.text, descriptionText: descriptionTextfield.text) {
+        if let errorMessage = vm.validate(
+            amountText: amountTextfield.text,
+            descriptionText: descriptionTextfield.text)
+        {
             showAlert(message: errorMessage)
             return
         }
@@ -100,16 +137,36 @@ class AddTransactionViewController: UIViewController, UIPickerViewDelegate, UIPi
               let amount = Double(amountText),
               let description = descriptionTextfield.text else {return}
         
-        vm.saveTransaction(
-            amount: amount,
-            description: description,
-            category: selectedCategory,
-            type: selectedTransactionType,
-            date: datePicker.date
-        )
-        
-        print("Transaction Saved")
-        
+        switch mode {
+            
+        case .add:
+            
+            vm.saveTransaction(
+                amount: amount,
+                description: description,
+                category: selectedCategory,
+                type: selectedTransactionType,
+                date: datePicker.date
+            )
+            
+            print("Transaction Saved")
+
+            
+        case .edit(let transaction):
+            
+            vm.updateTransaction(
+                id: transaction.id,
+                amount: amount,
+                description: description,
+                category: selectedCategory,
+                type: selectedTransactionType,
+                date: datePicker.date
+            )
+            
+            print("Transaction Updated")
+
+        }
+                
         navigationController?.popViewController(animated: true)
     }
     

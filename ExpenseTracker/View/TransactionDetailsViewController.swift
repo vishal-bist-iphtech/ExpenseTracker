@@ -26,108 +26,99 @@ final class TransactionDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        vm = TransactionDetailsVM(
-            transaction: transaction!,
-            repository: AppContainer.shared.transactionRepository
-        )
-        
-        configureUI()
-
         guard let transaction = transaction else {
             assertionFailure("TransactionDetailsViewController: transaction not set in prepare(for:sender:) - check segue identifier 'showTransactionDetails' from DashboardViewController")
             return
         }
         
-
-        
-        guard amountLabel != nil, descriptionLabel != nil, categoryLabel != nil, dateLabel != nil, typeLabel != nil else {
-            assertionFailure("TransactionDetailsViewController: outlet nil")
-            return
-        }
-
-        amountLabel.text = "₹\(transaction.amount)"
-        descriptionLabel.text = transaction.description
-
-        switch transaction.category {
-        case .food:
-            categoryLabel.text = "Food"
-        case .shopping:
-            categoryLabel.text = "Shopping"
-        case .travel:
-            categoryLabel.text = "Travel"
-        case .bills:
-            categoryLabel.text = "Bills"
-        case .salary:
-            categoryLabel.text = "Salary"
-        case .other:
-            categoryLabel.text = "Other"
-        }
-
-        dateLabel.text = transaction.date.formatted(
-            date: .abbreviated,
-            time: .omitted
+        vm = TransactionDetailsVM(
+            transaction: transaction,
+            repository: AppContainer.shared.transactionRepository
         )
-
-        switch transaction.type {
-        case .income:
-            typeLabel.text = "Income"
-        case .expense:
-            typeLabel.text = "Expense"
-        }
+        
+        configureUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Refresh from repository in case transaction was edited
+        vm.refreshTransaction()
+        configureUI()
     }
     
     
     private func configureUI() {
+        guard isViewLoaded, amountLabel != nil else { return }
 
         amountLabel.text = "₹\(vm.transaction.amount)"
         descriptionLabel.text = vm.transaction.description
 
-        switch vm.transaction.category {
-
-        case .food:
-            categoryLabel.text = "Food"
-
-        case .shopping:
-            categoryLabel.text = "Shopping"
-
-        case .travel:
-            categoryLabel.text = "Travel"
-
-        case .bills:
-            categoryLabel.text = "Bills"
-
-        case .salary:
-            categoryLabel.text = "Salary"
-
-        case .other:
-            categoryLabel.text = "Other"
-        }
+        categoryLabel.text = vm.transaction.category.displayName
 
         dateLabel.text = vm.transaction.date.formatted(
             date: .abbreviated,
             time: .omitted
         )
 
-        switch vm.transaction.type {
-
-        case .income:
-            typeLabel.text = "Income"
-
-        case .expense:
-            typeLabel.text = "Expense"
+        typeLabel.text = vm.transaction.type.displayName
+    }
+    
+    
+    override func prepare(
+        for segue: UIStoryboardSegue,
+        sender: Any?
+    ) {
+        
+        super.prepare(for: segue, sender: sender)
+        
+        if segue.identifier == "editTransaction" {
+            
+            guard let destination = segue.destination as? AddTransactionViewController else { return }
+            
+            // sender is expected to be Transaction via editButton(_:), fallback to vm.transaction for safety
+            if let transaction = sender as? Transaction {
+                destination.mode = .edit(transaction)
+            } else {
+                destination.mode = .edit(vm.transaction)
+            }
         }
     }
     
     
     
     @IBAction func editButton(_ sender: UIButton) {
+        
+        performSegue(withIdentifier: "editTransaction", sender: vm.transaction)
     }
     
     @IBAction func deleteButton(_ sender: UIButton) {
         
-        vm.deleteTransaction()
+        let alert = UIAlertController(
+            title: "Delete Transaction?",
+            message: "Are you sure you want to delete this transaction?",
+            preferredStyle: .alert
+        )
         
-        navigationController?.popViewController(animated: true)
+        alert.addAction(
+            UIAlertAction(
+                title: "Cancel",
+                style: .cancel
+            )
+        )
+        
+        alert.addAction(
+            UIAlertAction(
+                title: "Delete",
+                style: .destructive
+            ) { [weak self] _ in
+                    
+                self?.vm.deleteTransaction()
+                
+                self?.navigationController?.popViewController(animated: true)
+            }
+        )
+        
+        present(alert, animated: true)
     }
    
 }
