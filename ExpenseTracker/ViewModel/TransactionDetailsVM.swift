@@ -11,7 +11,7 @@ final class TransactionDetailsVM {
     
     private let repository: TransactionRepository
     
-    let transaction: Transaction
+    private(set) var transaction: Transaction
     
     init(
         transaction: Transaction,
@@ -19,6 +19,12 @@ final class TransactionDetailsVM {
     ) {
         self.transaction = transaction
         self.repository = repository
+    }
+    
+    func refreshTransaction() {
+        if let updated = repository.fetchTransaction(with: transaction.id) {
+            transaction = updated
+        }
     }
     
     func deleteTransaction() {

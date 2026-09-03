@@ -20,4 +20,13 @@ final class DashboardVM {
     func loadTransactions() {
         transactions = repository.fetchTransactions()
     }
+    
+    func deleteTransaction(at index: Int) {
+        
+        let transaction = transactions[index]
+        
+        repository.deleteTransaction(with: transaction.id)
+            
+        loadTransactions()
+    }
 }
