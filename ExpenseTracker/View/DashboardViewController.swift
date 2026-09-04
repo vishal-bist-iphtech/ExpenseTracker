@@ -11,6 +11,7 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
 
     @IBOutlet weak var balanceTitleLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var emptyStateView: UIView!
     
     
     private let vm = DashboardVM(
@@ -18,12 +19,23 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
     )
     
     
+    private let refreshControl = UIRefreshControl()
+
     
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        emptyStateView.isHidden = true
+        
+        refreshControl.addTarget(
+            self,
+            action: #selector(refreshTransactions),
+            for: .valueChanged
+        )
+        tableView.refreshControl = refreshControl
         tableView.dataSource = self
         tableView.delegate = self
     }
@@ -33,6 +45,16 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
         
         vm.loadTransactions()
         tableView.reloadData()
+        updateEmptyState()
+    }
+    
+    @objc private func refreshTransactions() {
+        
+        vm.loadTransactions()
+        tableView.reloadData()
+        updateEmptyState()
+        
+        refreshControl.endRefreshing()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -48,20 +70,29 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
             }
             
             if let cell = sender as? UITableViewCell, let indexPath = tableView.indexPath(for: cell) {
-                destination.transaction = vm.transactions[indexPath.row]
+                destination.transaction = vm.displayedTransactions[indexPath.row]
                 return
             }
             
             if let indexPath = tableView.indexPathForSelectedRow {
-                destination.transaction = vm.transactions[indexPath.row]
+                destination.transaction = vm.displayedTransactions[indexPath.row]
                 return
             }
         }
     }
     
+    
+    private func updateEmptyState() {
+        
+        let isEmpty = vm.displayedTransactions.isEmpty
+        
+        tableView.isHidden = isEmpty
+        emptyStateView.isHidden = !isEmpty
+    }
+    
     // no. rows?
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return vm.transactions.count
+        return vm.displayedTransactions.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -73,7 +104,7 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
             return UITableViewCell()
         }
         
-        let transaction = vm.transactions[indexPath.row]
+        let transaction = vm.displayedTransactions[indexPath.row]
         
         cell.configure(with: transaction)
         
@@ -84,7 +115,7 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
         
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let transaction = vm.transactions[indexPath.row]
+        let transaction = vm.displayedTransactions[indexPath.row]
         
         performSegue(withIdentifier: "showTransactionDetails", sender: transaction)
     }
