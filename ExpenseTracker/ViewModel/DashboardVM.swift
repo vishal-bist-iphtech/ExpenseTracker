@@ -108,4 +108,36 @@ final class DashboardVM {
             
         loadTransactions()
     }
+    
+    // MARK: - Totals (derived from allTransactions for global balance)
+    
+    /// Sum of all income transaction amounts; 0 if none.
+    var totalIncome: Double {
+        allTransactions
+            .filter { $0.type == .income }
+            .reduce(0) { $0 + $1.amount }
+    }
+    
+    /// Sum of all expense transaction amounts; 0 if none.
+    var totalExpense: Double {
+        allTransactions
+            .filter { $0.type == .expense }
+            .reduce(0) { $0 + $1.amount }
+    }
+    
+    /// Net balance = income - expense, clamped to >=0 per spec ("positive otherwise 0").
+    var totalBalance: Double {
+        max(0, totalIncome - totalExpense)
+    }
+    
+    // Optional: filtered totals if you want balances to reflect current filter
+    var filteredIncome: Double {
+        displayedTransactions.filter { $0.type == .income }.reduce(0) { $0 + $1.amount }
+    }
+    var filteredExpense: Double {
+        displayedTransactions.filter { $0.type == .expense }.reduce(0) { $0 + $1.amount }
+    }
+    var filteredBalance: Double {
+        max(0, filteredIncome - filteredExpense)
+    }
 }
