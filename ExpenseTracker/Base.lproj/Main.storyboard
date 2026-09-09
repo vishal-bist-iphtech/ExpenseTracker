@@ -195,12 +195,17 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="View All" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KCA-k3-f0l" userLabel="View All Label">
-                                        <rect key="frame" x="312.66666666666669" y="28.666666666666689" width="49.333333333333314" height="15.666666666666668"/>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="13"/>
-                                        <color key="textColor" systemColor="secondaryLabelColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bXt-ZW-XWj">
+                                        <rect key="frame" x="288.66666666666669" y="21.666666666666686" width="73.333333333333314" height="29.666666666666671"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="View All">
+                                            <fontDescription key="titleFontDescription" type="system" weight="medium" pointSize="13"/>
+                                            <color key="baseForegroundColor" systemColor="secondaryLabelColor"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <segue destination="yS1-13-jjt" kind="show" id="ZSI-6C-28M"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                             </stackView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="70" estimatedRowHeight="70" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="oA9-NU-cK9">
@@ -567,7 +572,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$500" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xUF-ka-7Vf">
-                                <rect key="frame" x="20.000000000000004" y="230.33333333333334" width="42.333333333333343" height="40.000000000000028"/>
+                                <rect key="frame" x="20" y="230.33333333333334" width="5" height="40.000000000000028"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="2vR-8T-vZU"/>
                                     <constraint firstAttribute="width" constant="5" id="eyy-3d-005"/>
@@ -880,9 +885,167 @@
             </objects>
             <point key="canvasLocation" x="1029.8507462686566" y="-539.58810068649882"/>
         </scene>
+        <!--Transaction List View Controller-->
+        <scene sceneID="qvM-5W-RhQ">
+            <objects>
+                <viewController id="yS1-13-jjt" customClass="TransactionListViewController" customModule="ExpenseTracker" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="aNf-Rq-xjv">
+                        <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="0a6-KZ-Zss">
+                                <rect key="frame" x="20" y="202" width="362" height="38"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Transactions" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A5W-nK-zfW">
+                                        <rect key="frame" x="0.0" y="0.0" width="181" height="38"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SLe-Ek-sgt">
+                                        <rect key="frame" x="181" y="0.0" width="181" height="38"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Filter">
+                                            <fontDescription key="titleFontDescription" type="system" weight="medium" pointSize="20"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <segue destination="QQP-zy-FIo" kind="show" identifier="showFilterTransaction" id="DXC-s6-zaG"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="70" estimatedRowHeight="70" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="uOx-SC-0Ay">
+                                <rect key="frame" x="20" y="264" width="362" height="500"/>
+                                <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="500" id="w0j-97-FAH"/>
+                                </constraints>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TransactionCell" rowHeight="68" id="TLCell-001" customClass="TransactionTableViewCell" customModule="ExpenseTracker" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="50" width="362" height="68"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="TLCell-001" id="TLCnt-001">
+                                            <rect key="frame" x="0.0" y="0.0" width="362" height="68"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TLBg-001" userLabel="Cell Background">
+                                                    <rect key="frame" x="0.0" y="4" width="362" height="60"/>
+                                                    <subviews>
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TLInd-001" userLabel="Type Indicator">
+                                                            <rect key="frame" x="0.0" y="0.0" width="4" height="60"/>
+                                                            <color key="backgroundColor" systemColor="systemGreenColor"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="4" id="TLIndW-01"/>
+                                                            </constraints>
+                                                        </view>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="TLImg-001">
+                                                            <rect key="frame" x="16" y="10" width="40" height="40"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="40" id="TLImgH-01"/>
+                                                                <constraint firstAttribute="width" constant="40" id="TLImgW-01"/>
+                                                            </constraints>
+                                                        </imageView>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TLDesc-001">
+                                                            <rect key="frame" x="68" y="10" width="39" height="18"/>
+                                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sep 2, 2026" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TLDate-001">
+                                                            <rect key="frame" x="68" y="31.999999999999996" width="69" height="14.333333333333332"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                            <color key="textColor" systemColor="secondaryLabelColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="- ₹500" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TLAmnt-001">
+                                                            <rect key="frame" x="295.66666666666669" y="21" width="50.333333333333314" height="18"/>
+                                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    <constraints>
+                                                        <constraint firstItem="TLDesc-001" firstAttribute="top" secondItem="TLBg-001" secondAttribute="top" constant="10" id="TLC1-01"/>
+                                                        <constraint firstItem="TLDate-001" firstAttribute="leading" secondItem="TLImg-001" secondAttribute="trailing" constant="12" id="TLC10-01"/>
+                                                        <constraint firstAttribute="trailing" secondItem="TLAmnt-001" secondAttribute="trailing" constant="16" id="TLC11-01"/>
+                                                        <constraint firstItem="TLAmnt-001" firstAttribute="centerY" secondItem="TLBg-001" secondAttribute="centerY" id="TLC2-01"/>
+                                                        <constraint firstItem="TLDesc-001" firstAttribute="leading" secondItem="TLImg-001" secondAttribute="trailing" constant="12" id="TLC3-01"/>
+                                                        <constraint firstItem="TLDate-001" firstAttribute="top" secondItem="TLDesc-001" secondAttribute="bottom" constant="4" id="TLC4-01"/>
+                                                        <constraint firstItem="TLImg-001" firstAttribute="centerY" secondItem="TLBg-001" secondAttribute="centerY" id="TLC5-01"/>
+                                                        <constraint firstAttribute="bottom" secondItem="TLInd-001" secondAttribute="bottom" id="TLC6-01"/>
+                                                        <constraint firstItem="TLInd-001" firstAttribute="leading" secondItem="TLBg-001" secondAttribute="leading" id="TLC7-01"/>
+                                                        <constraint firstItem="TLInd-001" firstAttribute="top" secondItem="TLBg-001" secondAttribute="top" id="TLC8-01"/>
+                                                        <constraint firstItem="TLImg-001" firstAttribute="leading" secondItem="TLBg-001" secondAttribute="leading" constant="16" id="TLC9-01"/>
+                                                    </constraints>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="TLBg-001" secondAttribute="bottom" constant="4" id="TLBgBot-01"/>
+                                                <constraint firstItem="TLBg-001" firstAttribute="leading" secondItem="TLCnt-001" secondAttribute="leading" id="TLBgLead-01"/>
+                                                <constraint firstItem="TLBg-001" firstAttribute="top" secondItem="TLCnt-001" secondAttribute="top" constant="4" id="TLBgTop-01"/>
+                                                <constraint firstItem="TLBg-001" firstAttribute="trailing" secondItem="TLCnt-001" secondAttribute="trailing" id="TLBgTrail-01"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="amountLabel" destination="TLAmnt-001" id="TLOutAmt-01"/>
+                                            <outlet property="cardBackgroundView" destination="TLBg-001" id="TLOutBg-01"/>
+                                            <outlet property="dateLabel" destination="TLDate-001" id="TLOutDate-01"/>
+                                            <outlet property="descriptionLabel" destination="TLDesc-001" id="TLOutDesc-01"/>
+                                            <outlet property="typeImageView" destination="TLImg-001" id="TLOutImg-01"/>
+                                            <outlet property="typeIndicatorView" destination="TLInd-001" id="TLOutInd-01"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nyq-j3-AuZ">
+                                <rect key="frame" x="20" y="788" width="362" height="45"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="pfV-hH-6HC"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Add">
+                                    <backgroundConfiguration key="background">
+                                        <color key="strokeColor" systemColor="systemBlueColor"/>
+                                    </backgroundConfiguration>
+                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="24"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="addButtonTapped:" destination="yS1-13-jjt" eventType="touchUpInside" id="addAct-01"/>
+                                    <segue destination="DeU-P4-alO" kind="show" identifier="showAddTransaction" id="jvb-3p-mdw"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="wPz-8b-gNK"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="uOx-SC-0Ay" firstAttribute="leading" secondItem="wPz-8b-gNK" secondAttribute="leading" constant="20" id="8xm-h1-hS9"/>
+                            <constraint firstItem="uOx-SC-0Ay" firstAttribute="top" secondItem="0a6-KZ-Zss" secondAttribute="bottom" constant="24" id="Ast-PE-Syw"/>
+                            <constraint firstItem="0a6-KZ-Zss" firstAttribute="top" secondItem="aNf-Rq-xjv" secondAttribute="topMargin" constant="24" id="Bu6-Yv-k07"/>
+                            <constraint firstItem="wPz-8b-gNK" firstAttribute="trailing" secondItem="Nyq-j3-AuZ" secondAttribute="trailing" constant="20" id="Erg-x0-6pQ"/>
+                            <constraint firstItem="Nyq-j3-AuZ" firstAttribute="top" secondItem="uOx-SC-0Ay" secondAttribute="bottom" constant="24" id="JJT-7V-vk0"/>
+                            <constraint firstItem="wPz-8b-gNK" firstAttribute="trailing" secondItem="uOx-SC-0Ay" secondAttribute="trailing" constant="20" id="JP8-7p-qqZ"/>
+                            <constraint firstItem="Nyq-j3-AuZ" firstAttribute="leading" secondItem="wPz-8b-gNK" secondAttribute="leading" constant="20" id="LFP-p3-mYl"/>
+                            <constraint firstItem="0a6-KZ-Zss" firstAttribute="leading" secondItem="wPz-8b-gNK" secondAttribute="leading" constant="20" id="Xx0-i0-EJD"/>
+                            <constraint firstItem="wPz-8b-gNK" firstAttribute="trailing" secondItem="0a6-KZ-Zss" secondAttribute="trailing" constant="20" id="viz-IL-jJf"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="sn4-6i-yc1"/>
+                    <connections>
+                        <outlet property="addButton" destination="Nyq-j3-AuZ" id="TLVcAddOut-01"/>
+                        <outlet property="tableView" destination="uOx-SC-0Ay" id="TLVcTblOut-01"/>
+                        <segue destination="mx2-HX-fTE" kind="show" identifier="showTransactionDetails" id="TLSegDet-01"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ef3-dO-ACT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1029.8507462686566" y="821.73913043478251"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="7Kv-uk-BTH"/>
+        <segue reference="DXC-s6-zaG"/>
+        <segue reference="TLSegDet-01"/>
+        <segue reference="jvb-3p-mdw"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="arrow.down.left" catalog="system" width="128" height="110"/>

@@ -17,7 +17,7 @@ struct Transaction {
     var date: Date
 }
 
-enum Category: Equatable {
+enum Category: String, CaseIterable, Equatable {
     case food
     case shopping
     case travel
@@ -51,9 +51,20 @@ enum Category: Equatable {
             
         }
     }
+
+    /// Raw value for Core Data persistence; defaults to "other" if unknown
+    init(safeRawValue: String?) {
+        if let raw = safeRawValue, let value = Category(rawValue: raw) {
+            self = value
+        } else {
+            self = .other
+        }
+    }
+
+    var rawValueForStore: String { rawValue }
 }
 
-enum TransactionType: Equatable {
+enum TransactionType: String, CaseIterable, Equatable {
     case income
     case expense
     
@@ -72,5 +83,37 @@ enum TransactionType: Equatable {
         case .income: return "+"
         case .expense: return "-"
         }
+    }
+
+    init(safeRawValue: String?) {
+        if let raw = safeRawValue, let value = TransactionType(rawValue: raw) {
+            self = value
+        } else {
+            self = .expense
+        }
+    }
+
+    var rawValueForStore: String { rawValue }
+}
+
+// MARK: - Core Data Mapping
+
+extension Transaction {
+    init(entity: TransactionEntity) {
+        self.id = entity.id ?? UUID()
+        self.amount = entity.amount
+        self.description = entity.descText ?? ""
+        self.category = Category(safeRawValue: entity.categoryRaw)
+        self.type = TransactionType(safeRawValue: entity.typeRaw)
+        self.date = entity.date ?? Date()
+    }
+
+    func update(entity: TransactionEntity) {
+        entity.id = id
+        entity.amount = amount
+        entity.descText = description
+        entity.categoryRaw = category.rawValueForStore
+        entity.typeRaw = type.rawValueForStore
+        entity.date = date
     }
 }
