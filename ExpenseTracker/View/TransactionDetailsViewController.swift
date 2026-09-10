@@ -13,12 +13,21 @@ final class TransactionDetailsViewController: UIViewController {
     
     private var vm: TransactionDetailsVM!
     
-    @IBOutlet weak var amountLabel: UILabel!
-    @IBOutlet weak var descriptionLabel: UILabel!
-    @IBOutlet weak var categoryLabel: UILabel!
-    @IBOutlet weak var dateLabel: UILabel!
-    @IBOutlet weak var typeLabel: UILabel!
- 
+    // Support both storyboard variants: UILabel (old) and UITextField (current storyboard)
+    // Keep original UILabel outlets optional to prevent crash when storyboard uses textFields
+    @IBOutlet weak var amountLabel: UILabel?
+    @IBOutlet weak var descriptionLabel: UILabel?
+    @IBOutlet weak var categoryLabel: UILabel?
+    @IBOutlet weak var dateLabel: UILabel?
+    @IBOutlet weak var typeLabel: UILabel?
+    
+    // Current storyboard uses UITextField for value display
+    @IBOutlet weak var amountTextField: UITextField?
+    @IBOutlet weak var descriptionTextField: UITextField?
+    @IBOutlet weak var categoryTextField: UITextField?
+    @IBOutlet weak var dateTextField: UITextField?
+    @IBOutlet weak var typeTextField: UITextField?
+  
     
     
     
@@ -42,25 +51,59 @@ final class TransactionDetailsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Refresh from repository in case transaction was edited
-        vm.refreshTransaction()
-        configureUI()
+        if vm != nil {
+            vm.refreshTransaction()
+            configureUI()
+        }
     }
     
     
     private func configureUI() {
-        guard isViewLoaded, amountLabel != nil else { return }
+        guard isViewLoaded, vm != nil else { return }
 
-        amountLabel.text = "₹\(vm.transaction.amount)"
-        descriptionLabel.text = vm.transaction.description
-
-        categoryLabel.text = vm.transaction.category.displayName
-
-        dateLabel.text = vm.transaction.date.formatted(
+        let amountText = "₹\(vm.transaction.amount)"
+        let descText = vm.transaction.description
+        let categoryText = vm.transaction.category.displayName
+        let dateText = vm.transaction.date.formatted(
             date: .abbreviated,
             time: .omitted
         )
+        let typeText = vm.transaction.type.displayName
 
-        typeLabel.text = vm.transaction.type.displayName
+        // UILabel variants (if storyboard uses labels)
+        amountLabel?.text = amountText
+        descriptionLabel?.text = descText
+        categoryLabel?.text = categoryText
+        dateLabel?.text = dateText
+        typeLabel?.text = typeText
+
+        // UITextField variants (current storyboard) - make non-editable
+        if let tf = amountTextField {
+            tf.text = amountText
+            tf.isEnabled = false
+            tf.isUserInteractionEnabled = false
+            tf.borderStyle = .roundedRect
+        }
+        if let tf = descriptionTextField {
+            tf.text = descText
+            tf.isEnabled = false
+            tf.isUserInteractionEnabled = false
+        }
+        if let tf = categoryTextField {
+            tf.text = categoryText
+            tf.isEnabled = false
+            tf.isUserInteractionEnabled = false
+        }
+        if let tf = dateTextField {
+            tf.text = dateText
+            tf.isEnabled = false
+            tf.isUserInteractionEnabled = false
+        }
+        if let tf = typeTextField {
+            tf.text = typeText
+            tf.isEnabled = false
+            tf.isUserInteractionEnabled = false
+        }
     }
     
     
@@ -78,7 +121,7 @@ final class TransactionDetailsViewController: UIViewController {
             // sender is expected to be Transaction via editButton(_:), fallback to vm.transaction for safety
             if let transaction = sender as? Transaction {
                 destination.mode = .edit(transaction)
-            } else {
+            } else if vm != nil {
                 destination.mode = .edit(vm.transaction)
             }
         }
@@ -88,6 +131,7 @@ final class TransactionDetailsViewController: UIViewController {
     
     @IBAction func editButton(_ sender: UIButton) {
         
+        guard vm != nil else { return }
         performSegue(withIdentifier: "editTransaction", sender: vm.transaction)
     }
     

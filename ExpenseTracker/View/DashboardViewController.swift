@@ -104,21 +104,21 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
         growthBadgeView?.layer.masksToBounds = true
 
 
-        depositButton.layer.cornerRadius = 12
-        depositButton.layer.masksToBounds = true
-        depositButton.layer.borderWidth = 1
-        depositButton.layer.borderColor = UIColor.lightGray.cgColor
+        depositButton?.layer.cornerRadius = 12
+        depositButton?.layer.masksToBounds = true
+        depositButton?.layer.borderWidth = 1
+        depositButton?.layer.borderColor = UIColor.lightGray.cgColor
         
         
-        filterButton.layer.cornerRadius = 40
-        filterButton.layer.masksToBounds = true
-        filterButton.layer.borderWidth = 1
-        filterButton.layer.borderColor = UIColor.lightGray.cgColor
+        filterButton?.layer.cornerRadius = 40
+        filterButton?.layer.masksToBounds = true
+        filterButton?.layer.borderWidth = 1
+        filterButton?.layer.borderColor = UIColor.lightGray.cgColor
         
-        withdrawButton.layer.cornerRadius = 12
-        withdrawButton.layer.masksToBounds = true
-        withdrawButton.layer.borderWidth = 1
-        withdrawButton.layer.borderColor = UIColor.lightGray.cgColor
+        withdrawButton?.layer.cornerRadius = 12
+        withdrawButton?.layer.masksToBounds = true
+        withdrawButton?.layer.borderWidth = 1
+        withdrawButton?.layer.borderColor = UIColor.lightGray.cgColor
 
         emptyStateView?.layer.cornerRadius = 12
         emptyStateView?.layer.masksToBounds = true
@@ -173,7 +173,7 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
         
         super.prepare(for: segue, sender: sender)
         
-        if segue.identifier == "showFilters" {
+        if segue.identifier == "showFilters" || segue.identifier == "showFilterTransaction" || segue.identifier == "showFilter" {
             guard let destination = segue.destination as? FilterViewController else { return }
             destination.viewModel = FilterVM(filter: vm.currentFilter)
             destination.delegate = self
@@ -189,12 +189,21 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
             }
             
             if let cell = sender as? UITableViewCell, let indexPath = tableView.indexPath(for: cell) {
-                destination.transaction = vm.displayedTransactions[indexPath.row]
+                // Dashboard shows recentTransactions (prefix 5), map to correct transaction
+                if indexPath.row < vm.recentTransactions.count {
+                    destination.transaction = vm.recentTransactions[indexPath.row]
+                } else if indexPath.row < vm.displayedTransactions.count {
+                    destination.transaction = vm.displayedTransactions[indexPath.row]
+                }
                 return
             }
             
             if let indexPath = tableView.indexPathForSelectedRow {
-                destination.transaction = vm.displayedTransactions[indexPath.row]
+                if indexPath.row < vm.recentTransactions.count {
+                    destination.transaction = vm.recentTransactions[indexPath.row]
+                } else if indexPath.row < vm.displayedTransactions.count {
+                    destination.transaction = vm.displayedTransactions[indexPath.row]
+                }
                 return
             }
         }
@@ -202,16 +211,15 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
     
     
     private func updateEmptyState() {
-        
+        // Show empty when filtered results are empty; dashboard displays recentTransactions (max 5)
         let isEmpty = vm.displayedTransactions.isEmpty
-        
         tableView.isHidden = isEmpty
         emptyStateView.isHidden = !isEmpty
     }
     
-    // no. rows?
+    // no. rows? Dashboard shows only recent 5
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return vm.displayedTransactions.count
+        return vm.recentTransactions.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -223,7 +231,7 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
             return UITableViewCell()
         }
         
-        let transaction = vm.displayedTransactions[indexPath.row]
+        let transaction = vm.recentTransactions[indexPath.row]
         
         cell.configure(with: transaction)
         
@@ -234,7 +242,7 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
         
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let transaction = vm.displayedTransactions[indexPath.row]
+        let transaction = vm.recentTransactions[indexPath.row]
         
         performSegue(withIdentifier: "showTransactionDetails", sender: transaction)
     }
@@ -263,8 +271,8 @@ class DashboardViewController: UIViewController, UITableViewDataSource, UITableV
                 style: .destructive
             ) { [weak self] _ in
                 
-
-                self?.vm.deleteTransaction(at: indexPath.row)
+                // Dashboard displays recentTransactions (first 5), delete via recent mapping
+                self?.vm.deleteRecentTransaction(at: indexPath.row)
                 
 
                 self?.updateBalanceLabels()

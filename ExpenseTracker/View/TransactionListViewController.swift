@@ -14,6 +14,7 @@ final class TransactionListViewController: UIViewController {
     @IBOutlet weak var emptyStateView: UIView!
     @IBOutlet weak var filterButton: UIButton?
     @IBOutlet weak var addButton: UIButton?
+    @IBOutlet weak var searchBar: UISearchBar?
     // MARK: - ViewModel
 
     private let vm = TransactionListVM(
@@ -38,6 +39,7 @@ final class TransactionListViewController: UIViewController {
 
         setupTableView()
         setupEmptyState()
+        setupSearchBar()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -56,8 +58,12 @@ final class TransactionListViewController: UIViewController {
         tableView.estimatedRowHeight = 68
         tableView.separatorStyle = .none
         
-        if tableView.backgroundColor == nil || tableView.backgroundColor == .clear {
-            tableView.backgroundColor = .clear
+        // Make background clear / same as screen background per requirement
+        view.backgroundColor = .systemBackground
+        tableView.backgroundColor = .clear
+        tableView.backgroundView = nil
+        if let bg = tableView.backgroundView {
+            bg.backgroundColor = .clear
         }
         
         tableView.refreshControl = refreshControl
@@ -66,6 +72,20 @@ final class TransactionListViewController: UIViewController {
         refreshControl.addTarget(self, action: #selector(refreshTransactions), for: .valueChanged)
        
         // Registering would overwrite prototype and break outlets
+    }
+
+    private func setupSearchBar() {
+        searchBar?.delegate = self
+        searchBar?.placeholder = "Search transactions"
+        searchBar?.searchBarStyle = .minimal
+        searchBar?.barTintColor = .clear
+        searchBar?.backgroundColor = .clear
+        searchBar?.isTranslucent = true
+        searchBar?.showsCancelButton = false
+        // Ensure background matches screen
+        if let textField = searchBar?.value(forKey: "searchField") as? UITextField {
+            textField.backgroundColor = .secondarySystemBackground
+        }
     }
 
     private func setupEmptyState() {
@@ -238,5 +258,34 @@ extension TransactionListViewController: FilterViewControllerDelegate {
     func filterViewController(_ controller: FilterViewController, didApply filter: Filter) {
         vm.apply(filter: filter)
         tableView?.reloadData()
+    }
+}
+
+// MARK: - UISearchBarDelegate
+
+extension TransactionListViewController: UISearchBarDelegate {
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        vm.updateSearch(text: searchText)
+        tableView?.reloadData()
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        vm.updateSearch(text: nil)
+        tableView?.reloadData()
+        searchBar.resignFirstResponder()
+    }
+
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(true, animated: true)
+    }
+
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(false, animated: true)
     }
 }

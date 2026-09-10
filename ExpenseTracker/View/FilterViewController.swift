@@ -31,7 +31,7 @@ class FilterViewController: UIViewController {
     @IBOutlet weak var typeSegmentedControl: UISegmentedControl!
     @IBOutlet weak var categoryPickerView: UIPickerView!
     @IBOutlet weak var datePicker: UIDatePicker!
-    @IBOutlet weak var dateFilterSwitch: UISwitch!
+    @IBOutlet weak var dateFilterSwitch: UISwitch? // Optional to prevent crash when outlet not connected
     @IBOutlet weak var sortSegmentedControl: UISegmentedControl!
 
     private let categories: [Category?] = [
@@ -65,53 +65,60 @@ class FilterViewController: UIViewController {
             )
         }
 
-        categoryPickerView.delegate = self
-        categoryPickerView.dataSource = self
+        categoryPickerView?.delegate = self
+        categoryPickerView?.dataSource = self
 
         configureInitialState()
     }
 
     private func configureInitialState() {
         // Type: 0=All, 1=Income, 2=Expense
+        // Use optional chaining to avoid crash if outlet not connected
         switch viewModel.filter.type {
         case .income:
-            typeSegmentedControl.selectedSegmentIndex = 1
+            typeSegmentedControl?.selectedSegmentIndex = 1
         case .expense:
-            typeSegmentedControl.selectedSegmentIndex = 2
+            typeSegmentedControl?.selectedSegmentIndex = 2
         default:
-            typeSegmentedControl.selectedSegmentIndex = 0
+            typeSegmentedControl?.selectedSegmentIndex = 0
         }
 
         // Category picker: 0=All, else match
         if let category = viewModel.filter.category,
            let index = categories.firstIndex(where: { $0 == category }) {
-            categoryPickerView.selectRow(index, inComponent: 0, animated: false)
+            categoryPickerView?.selectRow(index, inComponent: 0, animated: false)
         } else {
-            categoryPickerView.selectRow(0, inComponent: 0, animated: false)
+            categoryPickerView?.selectRow(0, inComponent: 0, animated: false)
         }
 
-        // Date filter switch + picker
+        // Date filter switch + picker - safely handle missing switch outlet
         if let date = viewModel.filter.date {
-            dateFilterSwitch.isOn = true
-            datePicker.date = date
-            datePicker.isEnabled = true
+            dateFilterSwitch?.isOn = true
+            datePicker?.date = date
+            datePicker?.isEnabled = true
         } else {
-            dateFilterSwitch.isOn = false
-            datePicker.isEnabled = false
+            dateFilterSwitch?.isOn = false
+            datePicker?.isEnabled = dateFilterSwitch == nil ? true : false
+            // If switch is missing, keep datePicker enabled so user can still pick date
+            if dateFilterSwitch == nil {
+                datePicker?.isEnabled = true
+            }
         }
 
         // Sort: map Filter.sortOptions -> segmented index
         if let index = sortOptions.firstIndex(of: viewModel.filter.sortOptions) {
             selectedSortOption = viewModel.filter.sortOptions
             // Ensure segmented control has enough segments; fallback to 0 if out of bounds
-            if index < sortSegmentedControl.numberOfSegments {
-                sortSegmentedControl.selectedSegmentIndex = index
+            if let segments = sortSegmentedControl?.numberOfSegments, index < segments {
+                sortSegmentedControl?.selectedSegmentIndex = index
+            } else if sortSegmentedControl == nil {
+                // no control, keep selectedSortOption in memory
             } else {
-                sortSegmentedControl.selectedSegmentIndex = 0
+                sortSegmentedControl?.selectedSegmentIndex = 0
                 selectedSortOption = sortOptions[0]
             }
         } else {
-            sortSegmentedControl.selectedSegmentIndex = 0
+            sortSegmentedControl?.selectedSegmentIndex = 0
             selectedSortOption = sortOptions[0]
         }
     }
@@ -119,7 +126,7 @@ class FilterViewController: UIViewController {
     // MARK: - Actions
 
     @IBAction func dateFilterSwitchChanged(_ sender: UISwitch) {
-        datePicker.isEnabled = sender.isOn
+        datePicker?.isEnabled = sender.isOn
     }
 
     @IBAction func sortSegmentChanged(_ sender: UISegmentedControl) {
@@ -129,12 +136,14 @@ class FilterViewController: UIViewController {
     }
 
     @IBAction func clearButtonTapped(_ sender: UIButton) {
-        // Reset UI to defaults
-        typeSegmentedControl.selectedSegmentIndex = 0
-        categoryPickerView.selectRow(0, inComponent: 0, animated: true)
-        dateFilterSwitch.setOn(false, animated: true)
-        datePicker.isEnabled = false
-        sortSegmentedControl.selectedSegmentIndex = 0
+        // Reset UI to defaults - use optional chaining for safety
+        typeSegmentedControl?.selectedSegmentIndex = 0
+        categoryPickerView?.selectRow(0, inComponent: 0, animated: true)
+        dateFilterSwitch?.setOn(false, animated: true)
+        if dateFilterSwitch != nil {
+            datePicker?.isEnabled = false
+        }
+        sortSegmentedControl?.selectedSegmentIndex = 0
         selectedSortOption = .newestFirst
 
         let filter = viewModel.makeFilter(
@@ -152,7 +161,7 @@ class FilterViewController: UIViewController {
 
         let type: TransactionType?
 
-        switch typeSegmentedControl.selectedSegmentIndex {
+        switch typeSegmentedControl?.selectedSegmentIndex ?? 0 {
         case 1:
             type = .income
         case 2:
@@ -161,14 +170,24 @@ class FilterViewController: UIViewController {
             type = nil
         }
 
-        let categoryRow = categoryPickerView.selectedRow(inComponent: 0)
-        let category: Category? = categories[categoryRow]
+        let categoryRow = categoryPickerView?.selectedRow(inComponent: 0) ?? 0
+        let category: Category? = categories.indices.contains(categoryRow) ? categories[categoryRow] : nil
 
-        let date: Date? = dateFilterSwitch.isOn ? datePicker.date : nil
+        // If switch is nil (outlet not connected), treat date as nil or use picker date if enabled
+        let date: Date? = {
+            if let switchControl = dateFilterSwitch {
+                return switchControl.isOn ? datePicker?.date : nil
+            } else {
+                // Fallback when switch missing: if datePicker is enabled, use its date only if viewModel had date
+                // To preserve existing behavior, return nil when switch absent and no date filter needed
+                // User can still filter by date if we assume date filter is enabled when switch missing
+                return nil
+            }
+        }()
 
         // Keep selectedSortOption in sync if user didn't trigger valueChanged
-        if sortOptions.indices.contains(sortSegmentedControl.selectedSegmentIndex) {
-            selectedSortOption = sortOptions[sortSegmentedControl.selectedSegmentIndex]
+        if let idx = sortSegmentedControl?.selectedSegmentIndex, sortOptions.indices.contains(idx) {
+            selectedSortOption = sortOptions[idx]
         }
 
         let filter = viewModel.makeFilter(
