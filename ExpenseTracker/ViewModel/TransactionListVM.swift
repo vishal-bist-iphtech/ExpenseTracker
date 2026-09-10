@@ -21,6 +21,8 @@ final class TransactionListVM {
         sortOptions: .newestFirst
     )
 
+    private var currentSearchText: String?
+
     var onDataUpdated: (() -> Void)?
 
     init(repository: TransactionRepository) {
@@ -42,6 +44,17 @@ final class TransactionListVM {
 
     func resetFilter() {
         currentFilter = Filter(type: nil, category: nil, date: nil, sortOptions: .newestFirst)
+        currentSearchText = nil
+        applyFilter()
+    }
+
+    func updateSearch(text: String?) {
+        let trimmed = text?.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let t = trimmed, !t.isEmpty {
+            currentSearchText = t
+        } else {
+            currentSearchText = nil
+        }
         applyFilter()
     }
 
@@ -76,6 +89,26 @@ final class TransactionListVM {
             result.sort { $0.amount < $1.amount }
         }
 
+        // search filter - applied after sorting so sort order preserved, then filtered by search text
+        if let search = currentSearchText?.lowercased(), !search.isEmpty {
+            result = result.filter { tx in
+                let desc = tx.description.lowercased()
+                let cat = tx.category.displayName.lowercased()
+                let type = tx.type.displayName.lowercased()
+                let amountString = String(format: "%.2f", tx.amount)
+                let amountInt = String(format: "%.0f", tx.amount)
+                let dateString = tx.date.formatted(date: .abbreviated, time: .omitted).lowercased()
+                return desc.contains(search)
+                    || cat.lowercased().contains(search)
+                    || type.lowercased().contains(search)
+                    || amountString.contains(search)
+                    || amountInt.contains(search)
+                    || dateString.contains(search)
+                    || tx.category.rawValue.lowercased().contains(search)
+                    || tx.type.rawValue.lowercased().contains(search)
+            }
+        }
+
         displayedTransactions = result
         onDataUpdated?()
     }
@@ -105,7 +138,10 @@ final class TransactionListVM {
             || currentFilter.category != nil
             || currentFilter.date != nil
             || currentFilter.sortOptions != .newestFirst
+            || (currentSearchText != nil && !(currentSearchText?.isEmpty ?? true))
     }
+
+    var currentSearchTextValue: String? { currentSearchText }
 
 
     

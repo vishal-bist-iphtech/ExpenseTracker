@@ -100,12 +100,24 @@ final class DashboardVM {
         displayedTransactions = result
     }
     
+    /// Dashboard shows only the 5 most recent (filtered) transactions
+    var recentTransactions: [Transaction] {
+        Array(displayedTransactions.prefix(5))
+    }
+    
     func deleteTransaction(at index: Int) {
-        
+        guard displayedTransactions.indices.contains(index) else { return }
         let transaction = displayedTransactions[index]
         
         repository.deleteTransaction(with: transaction.id)
             
+        loadTransactions()
+    }
+    
+    func deleteRecentTransaction(at index: Int) {
+        guard recentTransactions.indices.contains(index) else { return }
+        let transaction = recentTransactions[index]
+        repository.deleteTransaction(with: transaction.id)
         loadTransactions()
     }
     
