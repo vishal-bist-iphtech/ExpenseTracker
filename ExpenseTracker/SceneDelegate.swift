@@ -17,6 +17,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
+
+        // Skip Landing when a previous login session is still valid.
+        if AuthVM(repository: AppContainer.shared.userRepository).isLoggedIn {
+            showMain(animated: false)
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -46,6 +51,43 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
         AppContainer.shared.saveContext()
+    }
+
+    // MARK: - Auth routing
+
+    /// Returns the SceneDelegate owning the given view controller's window.
+    static func of(_ viewController: UIViewController) -> SceneDelegate? {
+        viewController.view.window?.windowScene?.delegate as? SceneDelegate
+    }
+
+    /// Switches the window root to the main app (Dashboard navigation).
+    /// Used after login/signup so the auth screens are discarded and
+    /// the back button can never return to them.
+    func showMain(animated: Bool = true) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let main = storyboard.instantiateViewController(withIdentifier: "MainNavigationController")
+        setRoot(main, animated: animated)
+    }
+
+    /// Switches the window root back to Landing (logged-out entry point).
+    /// Used after logout so the back button can never return to the app.
+    func showLanding(animated: Bool = true) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let landing = storyboard.instantiateViewController(withIdentifier: "LandingViewController")
+        setRoot(landing, animated: animated)
+    }
+
+    private func setRoot(_ viewController: UIViewController, animated: Bool) {
+        guard let window = window else { return }
+        guard window.rootViewController !== viewController else { return }
+        if animated {
+            UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve) {
+                window.rootViewController = viewController
+            }
+        } else {
+            window.rootViewController = viewController
+        }
+        window.makeKeyAndVisible()
     }
 
 

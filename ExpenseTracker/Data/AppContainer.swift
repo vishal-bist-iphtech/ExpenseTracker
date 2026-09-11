@@ -14,10 +14,12 @@ final class AppContainer {
     
     let persistenceController: PersistenceController
     let transactionRepository: TransactionRepository
-    
+    let userRepository: UserRepository
+
     private init(persistence: PersistenceController = .shared) {
         self.persistenceController = persistence
         self.transactionRepository = TransactionRepository(persistence: persistence)
+        self.userRepository = UserRepository(persistence: persistence)
     }
 
     /// For tests / previews with in-memory store
