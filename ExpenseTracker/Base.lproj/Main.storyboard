@@ -1425,9 +1425,8 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PrfBadge-01" userLabel="Balance Badge View">
                                         <rect key="frame" x="40" y="301.33333333333331" width="322" height="40"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Total Balance  •  ₹12,000" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PrfBalLbl-01" userLabel="Balance Label">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Total Balance  •  ₹12,000" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PrfBalLbl-01" userLabel="Balance Label">
                                                 <rect key="frame" x="20" y="3.6666666666667425" width="282" height="24"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
                                                 <color key="textColor" white="1" alpha="0.89999999999999991" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
@@ -1435,7 +1434,10 @@
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="0.14999999999999999" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
+                                            <constraint firstItem="PrfBalLbl-01" firstAttribute="leading" secondItem="PrfBadge-01" secondAttribute="leading" constant="20" id="CGZ-e4-gcY"/>
                                             <constraint firstAttribute="height" constant="40" id="PrfBadgeH-01"/>
+                                            <constraint firstItem="PrfBalLbl-01" firstAttribute="top" secondItem="PrfBadge-01" secondAttribute="top" constant="3.6666666666667425" id="TyX-jN-ZbT"/>
+                                            <constraint firstItem="PrfBalLbl-01" firstAttribute="centerX" secondItem="PrfBadge-01" secondAttribute="centerX" id="ntM-3f-xnS"/>
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="user@example.com" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PrfEmail-01" userLabel="Email Label">
@@ -1764,21 +1766,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gxw-Kv-s1D" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="137" y="822"/>
-        </scene>
-        <!--View Controller-->
-        <scene sceneID="Imh-uz-6dS">
-            <objects>
-                <viewController id="6rf-St-OV6" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="aS3-Og-LkC">
-                        <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="Wh3-KQ-vE6"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Zj9-nA-zd2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-428" y="-1215"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
