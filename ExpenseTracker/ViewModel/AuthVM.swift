@@ -18,7 +18,6 @@ final class AuthVM {
 
     // MARK: - Session
 
-    /// The logged-in user's id, or nil when logged out.
     var currentUserId: UUID? {
         get {
             guard let stored = UserDefaults.standard.string(forKey: sessionKey) else {
@@ -35,11 +34,10 @@ final class AuthVM {
         }
     }
 
-    /// The logged-in user, or nil when logged out (or the session is stale).
     var currentUser: User? {
         guard let id = currentUserId else { return nil }
         guard let user = repository.fetchUser(with: id) else {
-            // Session points to a user that no longer exists — clear it.
+            
             currentUserId = nil
             return nil
         }
@@ -53,7 +51,6 @@ final class AuthVM {
     // MARK: - Signup
 
     /// Validates + creates the account and logs the user in.
-    /// Returns an error message, or nil on success (same pattern as AddTransactionVM).
     func signup(
         fullName: String?,
         email: String?,
@@ -103,8 +100,6 @@ final class AuthVM {
 
     // MARK: - Login
 
-    /// Validates credentials and logs the user in.
-    /// Returns an error message, or nil on success.
     func login(email: String?, password: String?) -> String? {
         let normalizedEmail = UserRepository.normalize(email: email ?? "")
         let password = password ?? ""
@@ -136,7 +131,6 @@ final class AuthVM {
 
     // MARK: - Helpers
 
-    /// Same rule the auth screens used before Core Data: must contain "@" and ".".
     private static func isValidEmail(_ email: String) -> Bool {
         email.contains("@") && email.contains(".")
     }

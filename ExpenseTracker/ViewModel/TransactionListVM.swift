@@ -89,7 +89,6 @@ final class TransactionListVM {
             result.sort { $0.amount < $1.amount }
         }
 
-        // search filter - applied after sorting so sort order preserved, then filtered by search text
         if let search = currentSearchText?.lowercased(), !search.isEmpty {
             result = result.filter { tx in
                 let desc = tx.description.lowercased()
